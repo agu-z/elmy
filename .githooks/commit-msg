@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+
+set -e
+
+COMMIT_MSG_FILE=$1
+
+changed_files=$(git --no-pager diff --cached --name-only)
+changed_packages=""
+
+package() {
+  if echo "$changed_files" | grep -q $3 "$2"; then
+    if [ -n "$changed_packages" ]; then
+      changed_packages="$changed_packages, "
+    fi
+
+    changed_packages="${changed_packages}$1"
+  fi
+}
+
+
+package "root"    "^packages" -v # In case you wonder, this -v gets passed to grep (inverse match).
+package "elm-ui"  "packages/elm-ui"
+package "elm"     "packages/elm"
+package "ios"     "packages/ios"
+package "spec"    "packages/spec"
+
+# New package? simply add:
+# package "NAME" "REGEX"
+#
+# Where:
+#   NAME is (surprise) the package name.
+#   REGEX is a grep expression that matches every file in that package
+#
+# I appreciate keeping them aligned :)
+
+if [ -n "$changed_packages" ]; then
+  echo "Changed Packages: $changed_packages"
+  sed -i.back "1s/^/[$changed_packages] /" "$COMMIT_MSG_FILE"
+else
+  echo
+  echo -e "\033[0;31mNo changed package(s) detected!\033[0m"
+  echo "Psst! You might need to update scripts/commit-msg.sh (uiasm root)"
+  echo
+  exit 1
+fi
+
