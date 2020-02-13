@@ -1,4 +1,4 @@
-module Spec exposing (..)
+module Spec exposing (container, element)
 
 import Bytes exposing (Bytes)
 import Bytes.Decode as Decode
@@ -20,12 +20,16 @@ element =
     describe "Element(..)"
         [ test "None" <|
             elementFormat None
-        , test "Text" <|
-            elementFormat (Text "Hello World")
         , test "Element" <|
             elementFormat (Element [] (Text "Hi"))
         , test "Container" <|
             elementFormat (Container Row [] [ Element [] (Text "Hello"), Text "World" ])
+        , test "Text" <|
+            elementFormat (Text "Hello World")
+        , test "Link" <|
+            elementFormat (Link [] { url = "https://example.com", label = Text "Click Here", newTab = False })
+        , test "Link (new tab)" <|
+            elementFormat (Link [] { url = "https://example.com", label = Text "Click Here", newTab = True })
         ]
 
 

@@ -41,8 +41,16 @@ element e =
                 , string txt
                 ]
 
+        Link attrs { url, label, newTab } ->
+            E.sequence
+                [ E.unsignedInt8 0xB1
+                , string url
+                , element label
+                , bool newTab
+                ]
+
         _ ->
-            E.unsignedInt8 0
+            E.unsignedInt8 0x00
 
 
 container : Container -> Encoder
@@ -73,3 +81,13 @@ list enc xs =
         [ E.unsignedInt16 en <| List.length xs
         , E.sequence <| List.map enc xs
         ]
+
+
+bool : Bool -> Encoder
+bool b =
+    E.unsignedInt8 <|
+        if b then
+            0x01
+
+        else
+            0x00

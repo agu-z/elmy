@@ -2,7 +2,7 @@ module UiAsm.Decode exposing (container, element, list, string)
 
 import Bytes exposing (Endianness(..))
 import Bytes.Decode as D exposing (Decoder)
-import UiAsm exposing (Container(..), Element(..))
+import UiAsm exposing (Container(..), Element(..), LinkConfig)
 
 
 element : Decoder (Element msg)
@@ -24,6 +24,13 @@ element =
 
                 0xB0 ->
                     D.map Text string
+
+                0xB1 ->
+                    D.map (Link []) <|
+                        D.map3 LinkConfig
+                            string
+                            element
+                            bool
 
                 _ ->
                     D.fail
@@ -69,3 +76,20 @@ list decoder =
     in
     D.unsignedInt16 BE
         |> D.andThen (\size -> D.loop ( size, [] ) listStep)
+
+
+bool : Decoder Bool
+bool =
+    let
+        helper b =
+            case b of
+                0x00 ->
+                    D.succeed False
+
+                0x01 ->
+                    D.succeed True
+
+                _ ->
+                    D.fail
+    in
+    D.unsignedInt8 |> D.andThen helper
