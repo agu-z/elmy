@@ -2,7 +2,7 @@ module UiAsm.Decode exposing (container, element, list, string)
 
 import Bytes exposing (Endianness(..))
 import Bytes.Decode as D exposing (Decoder)
-import UiAsm exposing (Container(..), Element(..), LinkConfig)
+import UiAsm exposing (Container(..), Element(..), ImageConfig, LinkConfig)
 
 
 element : Decoder (Element msg)
@@ -31,6 +31,12 @@ element =
                             string
                             element
                             bool
+
+                0xB2 ->
+                    D.map (Image []) <|
+                        D.map2 ImageConfig
+                            string
+                            string
 
                 _ ->
                     D.fail

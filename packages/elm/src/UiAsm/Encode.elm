@@ -49,8 +49,12 @@ element e =
                 , bool newTab
                 ]
 
-        _ ->
-            E.unsignedInt8 0x00
+        Image attrs { src, description } ->
+            E.sequence
+                [ E.unsignedInt8 0xB2
+                , string src
+                , string description
+                ]
 
 
 container : Container -> Encoder

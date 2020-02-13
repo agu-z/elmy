@@ -30,6 +30,8 @@ element =
             elementFormat (Link [] { url = "https://example.com", label = Text "Click Here", newTab = False })
         , test "Link (new tab)" <|
             elementFormat (Link [] { url = "https://example.com", label = Text "Click Here", newTab = True })
+        , test "Image" <|
+            elementFormat (Image [] { src = "https://example.com/cat.jpg", description = "A photo of a cat" })
         ]
 
 
