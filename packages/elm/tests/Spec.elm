@@ -1,4 +1,4 @@
-module Spec exposing (attribute, container, element, length, wrap)
+module Spec exposing (attribute, container, element, hAlign, length, vAlign, wrap)
 
 import Bytes exposing (Bytes)
 import Bytes.Decode as Decode
@@ -6,7 +6,7 @@ import Bytes.Encode as Encode
 import Expect exposing (Expectation)
 import Hex.Convert as Hex
 import Test exposing (Test, describe, test)
-import UiAsm exposing (Attribute(..), Container(..), Element(..), Length(..))
+import UiAsm exposing (Attribute(..), Container(..), Element(..), HAlign(..), Length(..), VAlign(..))
 import UiAsm.Decode as UDecode
 import UiAsm.Encode as UEncode
 import UiAsm.Spec exposing (Version(..))
@@ -64,6 +64,34 @@ attribute =
     describe "Attribute(..)"
         [ test "Width" <| attributeFormat (Width <| Px 100)
         , test "Height" <| attributeFormat (Height <| Fill 1)
+        , test "AlignX" <| attributeFormat (AlignX Right)
+        , test "AlignY" <| attributeFormat (AlignY CenterY)
+        ]
+
+
+hAlign : Test
+hAlign =
+    let
+        alignFormat =
+            testFormat UEncode.hAlign UDecode.hAlign
+    in
+    describe "HAlign(..)"
+        [ test "Left" <| alignFormat Left
+        , test "CenterX" <| alignFormat CenterX
+        , test "Right" <| alignFormat Right
+        ]
+
+
+vAlign : Test
+vAlign =
+    let
+        alignFormat =
+            testFormat UEncode.vAlign UDecode.vAlign
+    in
+    describe "VAlign(..)"
+        [ test "Top" <| alignFormat Top
+        , test "CenterY" <| alignFormat CenterY
+        , test "Bottom" <| alignFormat Bottom
         ]
 
 

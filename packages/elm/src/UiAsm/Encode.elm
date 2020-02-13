@@ -1,7 +1,15 @@
-module UiAsm.Encode exposing (attribute, container, element, length, list, string, wrap)
+module UiAsm.Encode exposing (attribute, container, element, hAlign, length, list, string, vAlign, wrap)
 
 import Bytes.Encode as E exposing (Encoder)
-import UiAsm exposing (Attribute(..), Container(..), Element(..), Length(..))
+import UiAsm
+    exposing
+        ( Attribute(..)
+        , Container(..)
+        , Element(..)
+        , HAlign(..)
+        , Length(..)
+        , VAlign(..)
+        )
 import UiAsm.Spec exposing (Version(..), en)
 
 
@@ -92,8 +100,14 @@ attribute a =
                 , length l
                 ]
 
+        AlignX x ->
+            E.sequence [ E.unsignedInt8 0x02, hAlign x ]
+
+        AlignY y ->
+            E.sequence [ E.unsignedInt8 0x03, vAlign y ]
+
         _ ->
-            E.unsignedInt8 0x00
+            E.unsignedInt8 0xFF
 
 
 length : Length -> Encoder
@@ -127,6 +141,34 @@ length l =
                 , pixels max
                 , length sublen
                 ]
+
+
+hAlign : HAlign -> Encoder
+hAlign x =
+    E.unsignedInt8 <|
+        case x of
+            Left ->
+                0x00
+
+            CenterX ->
+                0x01
+
+            Right ->
+                0x02
+
+
+vAlign : VAlign -> Encoder
+vAlign y =
+    E.unsignedInt8 <|
+        case y of
+            Top ->
+                0x00
+
+            CenterY ->
+                0x01
+
+            Bottom ->
+                0x02
 
 
 pixels : Int -> Encoder

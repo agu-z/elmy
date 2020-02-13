@@ -1,7 +1,17 @@
-module UiAsm.Decode exposing (attribute, container, element, length, list, string, unwrap)
+module UiAsm.Decode exposing (attribute, container, element, hAlign, length, list, string, unwrap, vAlign)
 
 import Bytes.Decode as D exposing (Decoder)
-import UiAsm exposing (Attribute(..), Container(..), Element(..), ImageConfig, Length(..), LinkConfig)
+import UiAsm
+    exposing
+        ( Attribute(..)
+        , Container(..)
+        , Element(..)
+        , HAlign(..)
+        , ImageConfig
+        , Length(..)
+        , LinkConfig
+        , VAlign(..)
+        )
 import UiAsm.Spec exposing (Version(..), en)
 
 
@@ -82,6 +92,12 @@ attribute =
                 0x01 ->
                     D.map Height length
 
+                0x02 ->
+                    D.map AlignX hAlign
+
+                0x03 ->
+                    D.map AlignY vAlign
+
                 _ ->
                     D.fail
     in
@@ -107,6 +123,46 @@ length =
 
                 0x04 ->
                     D.map2 Max pixels length
+
+                _ ->
+                    D.fail
+    in
+    D.unsignedInt8 |> D.andThen helper
+
+
+hAlign : Decoder HAlign
+hAlign =
+    let
+        helper t =
+            case t of
+                0x00 ->
+                    D.succeed Left
+
+                0x01 ->
+                    D.succeed CenterX
+
+                0x02 ->
+                    D.succeed Right
+
+                _ ->
+                    D.fail
+    in
+    D.unsignedInt8 |> D.andThen helper
+
+
+vAlign : Decoder VAlign
+vAlign =
+    let
+        helper t =
+            case t of
+                0x00 ->
+                    D.succeed Top
+
+                0x01 ->
+                    D.succeed CenterY
+
+                0x02 ->
+                    D.succeed Bottom
 
                 _ ->
                     D.fail
