@@ -1,19 +1,21 @@
-module UiAsm.Encode exposing (container, element, list, string)
+module UiAsm.Encode exposing (attribute, container, element, length, list, string, wrap)
 
 import Bytes.Encode as E exposing (Encoder)
-import UiAsm exposing (Container(..), Element(..))
-import UiAsm.Spec exposing (en)
+import UiAsm exposing (Attribute(..), Container(..), Element(..), Length(..))
+import UiAsm.Spec exposing (Version(..), en)
 
 
-wrap : Element msg -> Encoder
-wrap el =
-    E.sequence
-        -- HEADERS
-        [ E.unsignedInt8 0x00 -- version 0
+wrap : ( Version, Element msg ) -> Encoder
+wrap w =
+    case w of
+        ( Version v, el ) ->
+            E.sequence
+                -- HEADERS
+                [ E.unsignedInt8 v
 
-        -- BODY
-        , element el
-        ]
+                -- BODY
+                , element el
+                ]
 
 
 element : Element msg -> Encoder
@@ -25,6 +27,7 @@ element e =
         Element attrs child ->
             E.sequence
                 [ E.unsignedInt8 0x01
+                , list attribute attrs
                 , element child
                 ]
 
@@ -32,6 +35,7 @@ element e =
             E.sequence
                 [ E.unsignedInt8 0xA0
                 , container c
+                , list attribute attrs
                 , list element children
                 ]
 
@@ -44,6 +48,7 @@ element e =
         Link attrs { url, label, newTab } ->
             E.sequence
                 [ E.unsignedInt8 0xB1
+                , list attribute attrs
                 , string url
                 , element label
                 , bool newTab
@@ -52,6 +57,7 @@ element e =
         Image attrs { src, description } ->
             E.sequence
                 [ E.unsignedInt8 0xB2
+                , list attribute attrs
                 , string src
                 , string description
                 ]
@@ -69,6 +75,63 @@ container c =
 
             Column ->
                 0x02
+
+
+attribute : Attribute msg -> Encoder
+attribute a =
+    case a of
+        Width l ->
+            E.sequence
+                [ E.unsignedInt8 0x00
+                , length l
+                ]
+
+        Height l ->
+            E.sequence
+                [ E.unsignedInt8 0x01
+                , length l
+                ]
+
+        _ ->
+            E.unsignedInt8 0x00
+
+
+length : Length -> Encoder
+length l =
+    case l of
+        Px px ->
+            E.sequence
+                [ E.unsignedInt8 0x00
+                , pixels px
+                ]
+
+        Content ->
+            E.unsignedInt8 0x01
+
+        Fill portion ->
+            E.sequence
+                [ E.unsignedInt8 0x02
+                , E.unsignedInt8 portion
+                ]
+
+        Min min sublen ->
+            E.sequence
+                [ E.unsignedInt8 0x03
+                , pixels min
+                , length sublen
+                ]
+
+        Max max sublen ->
+            E.sequence
+                [ E.unsignedInt8 0x04
+                , pixels max
+                , length sublen
+                ]
+
+
+pixels : Int -> Encoder
+pixels =
+    E.unsignedInt16 en
 
 
 string : String -> Encoder

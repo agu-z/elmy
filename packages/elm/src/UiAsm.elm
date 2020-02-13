@@ -92,7 +92,8 @@ type Spacing
 
 
 type Color
-    = Rgba Float Float Float Float
+    = Rgb Int Int Int
+    | Rgba Int Int Int Float
 
 
 type alias Gradient =
