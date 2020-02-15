@@ -19,10 +19,10 @@ package() {
 
 
 package "root"    "^packages" -v # In case you wonder, this -v gets passed to grep (inverse match).
-package "elm-ui"  "packages/elm-ui"
-package "elm"     "packages/elm"
-package "ios"     "packages/ios"
-package "spec"    "packages/spec"
+package "elm-ui"  "packages/elm-ui/"
+package "elm"     "packages/elm/"
+package "ios"     "packages/ios/"
+package "spec"    "packages/spec/"
 
 # New package? simply add:
 # package "NAME" "REGEX"
