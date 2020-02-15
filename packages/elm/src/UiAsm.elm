@@ -3,6 +3,7 @@ module UiAsm exposing
     , BackgroundRepeat(..)
     , BorderRadiusEach
     , BorderWidthEach
+    , ButtonConfig
     , Color(..)
     , Container(..)
     , Cursor(..)
@@ -26,6 +27,7 @@ type Element msg
     | Text String
     | Link (List (Attribute msg)) (LinkConfig msg)
     | Image (List (Attribute msg)) ImageConfig
+    | Button (List (Attribute msg)) (ButtonConfig msg)
 
 
 type Container
@@ -145,4 +147,10 @@ type alias LinkConfig msg =
 type alias ImageConfig =
     { src : String
     , description : String
+    }
+
+
+type alias ButtonConfig msg =
+    { onPress : Maybe msg
+    , label : Element msg
     }

@@ -4,6 +4,7 @@ import Bytes.Decode as D exposing (Decoder)
 import UiAsm
     exposing
         ( Attribute(..)
+        , ButtonConfig
         , Container(..)
         , Element(..)
         , HAlign(..)
@@ -54,6 +55,12 @@ element =
                         D.map2 ImageConfig
                             string
                             string
+
+                0xB3 ->
+                    D.map2 Button (list attribute) <|
+                        D.map2 ButtonConfig
+                            (D.unsignedInt8 |> D.andThen (\_ -> D.succeed Nothing))
+                            element
 
                 _ ->
                     D.fail

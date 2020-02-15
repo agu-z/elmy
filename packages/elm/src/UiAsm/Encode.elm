@@ -70,6 +70,14 @@ element e =
                 , string description
                 ]
 
+        Button attrs { onPress, label } ->
+            E.sequence
+                [ E.unsignedInt8 0xB3
+                , list attribute attrs
+                , E.unsignedInt8 0x00 -- TODO: Handle msg encoding
+                , element label
+                ]
+
 
 container : Container -> Encoder
 container c =

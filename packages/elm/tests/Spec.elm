@@ -32,13 +32,18 @@ element =
         , test "Container" <|
             elementFormat (Container Row [ Width <| Px 300 ] [ Element [] (Text "Hello"), Text "World" ])
         , test "Text" <|
-            elementFormat (Text "Hello World")
+            elementFormat (Text "UiAsm Rocks")
         , test "Link" <|
             elementFormat (Link [ Height <| Px 200 ] { url = "https://example.com", label = Text "Click Here", newTab = False })
         , test "Link (new tab)" <|
             elementFormat (Link [ Width <| Fill 2 ] { url = "https://example.com", label = Text "Click Here", newTab = True })
         , test "Image" <|
             elementFormat (Image [ Width <| Px 100 ] { src = "https://example.com/cat.jpg", description = "A photo of a cat" })
+        , test "Button" <|
+            elementFormat (Button [] { onPress = Nothing, label = Text "+1" })
+
+        --, test "Button (with msg)" <|
+        --elementFormat (Button [] { onPress = Nothing, label = "Hi" })
         ]
 
 
