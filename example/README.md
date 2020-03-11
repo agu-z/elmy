@@ -10,6 +10,6 @@ We need to compile our Elm app. Just run make.
 $ make
 ```
 
-Then, open ios/android in XCode/Android Stude respectively and run the app.
+Then, open ios/android in XCode/Android Studio respectively and run the app.
 
 Try changing the UI and repeat.
