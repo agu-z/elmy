@@ -74,7 +74,7 @@ func decodeContainer(_ bin: inout Binary) -> some View {
             return AnyView(VStack { content })
         case let b:
             let x = String(format:"%02X", b)
-            return AnyView(Text("Unknown container: \(x)"))
+            return AnyView  (Text("Unknown container: \(x)"))
         }
     } catch {
         return AnyView(Text("Error: readContainer!"))

@@ -23,23 +23,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         
         let render : @convention(block) (JSValue) -> Void = { value in
-            do {
-                if let bytes = value.toArray() as? [UInt8] {
-                    var binary = Binary(bytes: bytes)
-                    
-                    // Use a UIHostingController as window root view controller.
-                    if let windowScene = scene as? UIWindowScene {
-                        let window = UIWindow(windowScene: windowScene)
-                        window.rootViewController = UIHostingController(rootView: decodeElement(&binary))
-                        self.window = window
-                        window.makeKeyAndVisible()
-                    }
-               }
-            } catch  {
-                print("Error info: \(error)")
-            }
-            
-            
+            if let bytes = value.toArray() as? [UInt8] {
+                var binary = Binary(bytes: bytes)
+                
+                // Use a UIHostingController as window root view controller.
+                if let windowScene = scene as? UIWindowScene {
+                    let window = UIWindow(windowScene: windowScene)
+                    window.rootViewController = UIHostingController(rootView: decodeElement(&binary))
+                    self.window = window
+                    window.makeKeyAndVisible()
+                }
+           }
         }
                 
         let jsContext = JSContext()
@@ -51,7 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         TimerJS.registerInto(jsContext: jsContext!)
         
-        jsContext?.setObject(render, forKeyedSubscript: "swiftUiAsmRender" as NSCopying & NSObjectProtocol)
+        jsContext?.setObject(render, forKeyedSubscript: "uiAsmRender" as NSCopying & NSObjectProtocol)
 
         if let filepath = Bundle.main.path(forResource: "app", ofType: "js") {
             do {
