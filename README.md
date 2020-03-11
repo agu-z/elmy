@@ -1,4 +1,6 @@
-# uiasm
+# elmy
+
+The Elm Architecture everywhere. Very experimental.
 
 ## Contributing
 

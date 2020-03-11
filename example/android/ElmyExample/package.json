@@ -1,0 +1,15 @@
+{
+  "name": "elmy-example-android",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Agustín Zubiaga <sup@aguz.me>",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "liquidcore": "^0.7.2"
+  }
+}
