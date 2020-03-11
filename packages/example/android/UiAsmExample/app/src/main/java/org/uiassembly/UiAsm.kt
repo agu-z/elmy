@@ -16,7 +16,6 @@ data class UiAsmBinary(var bytes: Iterator<Int>) {
     fun uInt16(): Int {
         val left = uInt8()
         val right = uInt8()
-        Log.d("UInt16", "$left  $right")
         return left shl 8 or right
     }
 
@@ -51,7 +50,6 @@ data class UiAsmBinary(var bytes: Iterator<Int>) {
 @Composable
 fun element(bin: UiAsmBinary) {
     if (!bin.bytes.hasNext()) {
-        Text("nada")
         return
     }
 
