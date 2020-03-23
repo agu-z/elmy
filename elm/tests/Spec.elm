@@ -3,7 +3,15 @@ module Spec exposing (attribute, container, element, hAlign, length, vAlign, wra
 import Bytes exposing (Bytes)
 import Bytes.Decode as Decode
 import Bytes.Encode as Encode
-import Elmy exposing (Attribute(..), Container(..), Element(..), HAlign(..), Length(..), VAlign(..))
+import Elmy
+    exposing
+        ( Attribute(..)
+        , Container(..)
+        , Element(..)
+        , HAlign(..)
+        , Length(..)
+        , VAlign(..)
+        )
 import Elmy.Decode as EDecode
 import Elmy.Encode as EEncode
 import Elmy.Spec exposing (Version(..))

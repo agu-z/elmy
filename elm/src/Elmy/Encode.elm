@@ -1,5 +1,6 @@
 module Elmy.Encode exposing (attribute, container, element, hAlign, length, list, string, vAlign, wrap)
 
+import Array exposing (Array)
 import Bytes.Encode as E exposing (Encoder)
 import Elmy
     exposing
@@ -22,61 +23,98 @@ wrap w =
                 [ E.unsignedInt8 v
 
                 -- BODY
-                , element el
+                , element el Array.empty |> Tuple.first
                 ]
 
 
-element : Element msg -> Encoder
-element e =
+element : Element msg -> Array msg -> ( Encoder, Array msg )
+element e msgIndex =
     case e of
         None ->
-            E.unsignedInt8 0x00
+            ( E.unsignedInt8 0x00, msgIndex )
 
         Element attrs child ->
-            E.sequence
-                [ E.unsignedInt8 0x01
-                , list attribute attrs
-                , element child
-                ]
+            Tuple.mapFirst
+                (\childElement ->
+                    E.sequence
+                        [ E.unsignedInt8 0x01
+                        , list attribute attrs
+                        , childElement
+                        ]
+                )
+                (element child msgIndex)
 
         Container c attrs children ->
-            E.sequence
+            let
+                ( elements, newMl ) =
+                    List.foldl
+                        (\child ( recurringElements, recurringMsgIndex ) ->
+                            Tuple.mapFirst (\x -> Array.push x recurringElements)
+                                (element child recurringMsgIndex)
+                        )
+                        ( Array.empty, msgIndex )
+                        children
+            in
+            ( E.sequence
                 [ E.unsignedInt8 0xA0
                 , container c
                 , list attribute attrs
-                , list element children
+                , list identity <| Array.toList elements
                 ]
+            , newMl
+            )
 
         Text txt ->
-            E.sequence
+            ( E.sequence
                 [ E.unsignedInt8 0xB0
                 , string txt
                 ]
+            , msgIndex
+            )
 
         Link attrs { url, label, newTab } ->
-            E.sequence
-                [ E.unsignedInt8 0xB1
-                , list attribute attrs
-                , string url
-                , element label
-                , bool newTab
-                ]
+            Tuple.mapFirst
+                (\labelElement ->
+                    E.sequence
+                        [ E.unsignedInt8 0xB1
+                        , list attribute attrs
+                        , string url
+                        , labelElement
+                        , bool newTab
+                        ]
+                )
+                (element label msgIndex)
 
         Image attrs { src, description } ->
-            E.sequence
+            ( E.sequence
                 [ E.unsignedInt8 0xB2
                 , list attribute attrs
                 , string src
                 , string description
                 ]
+            , msgIndex
+            )
 
         Button attrs { onPress, label } ->
-            E.sequence
-                [ E.unsignedInt8 0xB3
-                , list attribute attrs
-                , E.unsignedInt8 0x00 -- TODO: Handle msg encoding
-                , element label
-                ]
+            let
+                ( msgNumber, buttonMl ) =
+                    case onPress of
+                        Just msg ->
+                            ( Array.length msgIndex + 1, Array.push msg msgIndex )
+
+                        _ ->
+                            ( 0, msgIndex )
+            in
+            Tuple.mapFirst
+                (\labelElement ->
+                    E.sequence
+                        [ E.unsignedInt8 0xB3
+                        , list attribute attrs
+                        , E.unsignedInt16 en msgNumber
+                        , labelElement
+                        ]
+                )
+                (element label buttonMl)
 
 
 container : Container -> Encoder

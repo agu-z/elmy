@@ -1,6 +1,9 @@
-port module Ports exposing (render)
+port module Ports exposing (msg, tick)
 
 import Array
 
 
-port render : Array.Array Int -> Cmd msg
+port tick : Array.Array Int -> Cmd msg
+
+
+port msg : (Int -> msg) -> Sub msg

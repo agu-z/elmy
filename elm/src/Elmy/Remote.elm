@@ -13,18 +13,65 @@ import Elmy.Encode as UEncode
 import Platform exposing (Program, worker)
 
 
-type alias RemoteElement msg =
-    { view : Element msg
-    , render : Array Int -> Cmd msg
+type alias RemoteModel model msg =
+    { model : model
+    , msgIndex : Array msg
     }
 
 
-remoteElement : RemoteElement msg -> Program () () msg
-remoteElement { view, render } =
+type alias RemoteMsg =
+    Int
+
+
+type alias RemoteElement flags model msg =
+    Program flags (RemoteModel model msg) RemoteMsg
+
+
+remoteElement :
+    { init : flags -> ( model, Cmd msg )
+    , update : msg -> model -> ( model, Cmd msg )
+    , view : model -> Element msg
+    , tick : Array Int -> Cmd RemoteMsg
+    , msg : (Int -> RemoteMsg) -> Sub RemoteMsg
+    }
+    -> RemoteElement flags model msg
+remoteElement element =
+    let
+        tick : ( model, Cmd msg ) -> ( RemoteModel model msg, Cmd RemoteMsg )
+        tick ( model, _ ) =
+            let
+                ( viewElement, msgIndex ) =
+                    UEncode.element (element.view model) Array.empty
+            in
+            ( RemoteModel model msgIndex
+            , Cmd.batch
+                [ -- TODO: Deal with custom commands
+                  element.tick <|
+                    bytesToIntArray (Encode.encode viewElement)
+                ]
+            )
+
+        init : flags -> ( RemoteModel model msg, Cmd RemoteMsg )
+        init =
+            tick << element.init
+
+        update : RemoteMsg -> RemoteModel model msg -> ( RemoteModel model msg, Cmd RemoteMsg )
+        update msgNumber remoteModel =
+            case Array.get (msgNumber - 1) remoteModel.msgIndex of
+                Just msg ->
+                    tick <| element.update msg remoteModel.model
+
+                Nothing ->
+                    ( remoteModel, Cmd.none )
+
+        subscriptions : RemoteModel model msg -> Sub RemoteMsg
+        subscriptions _ =
+            element.msg identity
+    in
     worker
-        { init = \_ -> ( (), render <| bytesToIntArray (Encode.encode <| UEncode.element view) )
-        , update = \_ _ -> ( (), Cmd.none )
-        , subscriptions = \_ -> Sub.none
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
         }
 
 
