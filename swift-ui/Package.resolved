@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "BinaryKit",
+        "repositoryURL": "https://github.com/Cosmo/BinaryKit.git",
+        "state": {
+          "branch": null,
+          "revision": "aa12d3763f365cc2029d657c1c87c41feb941cc2",
+          "version": "3.0.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

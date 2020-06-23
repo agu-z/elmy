@@ -10,6 +10,7 @@ import SwiftUI
 import BinaryKit
 import JavaScriptCore
 
+@available(OSX 10.15, *)
 final class ElmyApp : ObservableObject {
     @Published var state: [UInt8] = []
     
@@ -50,6 +51,7 @@ final class ElmyApp : ObservableObject {
 }
 
 
+@available(OSX 10.15, *)
 struct Elmy : View {
     @ObservedObject private var app: ElmyApp;
     
@@ -65,6 +67,7 @@ struct Elmy : View {
 }
 
 
+@available(OSX 10.15, *)
 func elmyElement(_ bin: inout Binary, message: @escaping (UInt16) -> Void) -> some View {
     do {
         switch (try bin.readByte()) {
@@ -91,6 +94,7 @@ func elmyElement(_ bin: inout Binary, message: @escaping (UInt16) -> Void) -> so
     }
 }
 
+@available(OSX 10.15, *)
 func elmyContainer(_ bin: inout Binary, message: @escaping (UInt16) -> Void) -> some View {
     do {
         let container = try bin.readByte();
