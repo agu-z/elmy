@@ -1,6 +1,6 @@
 # elmy
 
-The Elm Architecture everywhere. Very experimental.
+Write native apps with elm. Very experimental.
 
 ## Contributing
 
