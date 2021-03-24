@@ -2,7 +2,7 @@
 
 Write native apps with elm. Very experimental.
 
-## Contributing
+See [example](./example/README.md).
 
 This project uses git hooks. Make sure to set them up before commiting:
 
@@ -23,4 +23,3 @@ otherwise do:
 ```console
 $ find .git/hooks -type l -exec rm {} \; && find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \;
 ```
-
